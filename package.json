@@ -1,0 +1,17 @@
+{
+  "name": "com.edanoue.vr.device.pico",
+  "displayName": "Edanoue VR Device Pico",
+  "version": "0.1.0",
+  "unity": "2021.3",
+  "description": "Edanoue Pico Device",
+  "keywords": [
+    "picoxr",
+    "xr",
+    "vr",
+    "virtual",
+    "xreditorsubsystem"
+  ],
+  "dependencies": {
+    "com.edanoue.vr.device.core": "0.1.0"
+  }
+}
