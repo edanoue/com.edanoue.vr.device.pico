@@ -1,7 +1,7 @@
 #nullable enable
-using UnityEngine;
 using Edanoue.VR.Device.Core;
 using Unity.XR.PXR;
+using UnityEngine;
 
 namespace Edanoue.VR.Device.Pico
 {
@@ -14,25 +14,26 @@ namespace Edanoue.VR.Device.Pico
             get
             {
                 var sensorState = new PxrSensorState2();
-                int sensorFrameIndex = 0;
+                var sensorFrameIndex = 0;
                 PXR_Plugin.System.UPxr_GetPredictedMainSensorStateNew(ref sensorState, ref sensorFrameIndex);
-                return(
+                return (
                     sensorState.pose.position.x,
                     sensorState.pose.position.y,
                     sensorState.pose.position.z * -1);
             }
         }
-        
+
         (float W, float X, float Y, float Z) ITracker.Rotation
         {
             get
             {
                 var sensorState = new PxrSensorState2();
-                int sensorFrameIndex = 0;
+                var sensorFrameIndex = 0;
                 PXR_Plugin.System.UPxr_GetPredictedMainSensorStateNew(ref sensorState, ref sensorFrameIndex);
-                Vector3 rototion = new Quaternion(sensorState.pose.orientation.x, sensorState.pose.orientation.y, sensorState.pose.orientation.z, sensorState.pose.orientation.w).eulerAngles;
+                var rototion = new Quaternion(sensorState.pose.orientation.x, sensorState.pose.orientation.y,
+                    sensorState.pose.orientation.z, sensorState.pose.orientation.w).eulerAngles;
                 var rot = Quaternion.Euler(-rototion.x, -rototion.y, rototion.z);
-                return(
+                return (
                     rot.w,
                     rot.x,
                     rot.y,

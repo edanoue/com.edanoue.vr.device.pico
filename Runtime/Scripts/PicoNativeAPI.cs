@@ -1,15 +1,14 @@
-using System;
 using System.Runtime.InteropServices;
 
 namespace Edanoue.VR.Device.Pico
 {
-    [StructLayout((LayoutKind.Sequential))]
+    [StructLayout(LayoutKind.Sequential)]
     public struct PxrVector2f
     {
         public float x;
         public float y;
     }
-    
+
     [StructLayout(LayoutKind.Sequential)]
     public struct PxrControllerInputState
     {
@@ -49,7 +48,6 @@ namespace Edanoue.VR.Device.Pico
         private const string PXR_API_DLL = "pxr_api";
 
         [DllImport(PXR_API_DLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Pxr_GetControllerInputState(UInt32 deviceId, ref PxrControllerInputState state);
-
+        public static extern int Pxr_GetControllerInputState(uint deviceId, ref PxrControllerInputState state);
     }
 }

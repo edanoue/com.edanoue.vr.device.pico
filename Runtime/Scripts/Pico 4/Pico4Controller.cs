@@ -1,15 +1,26 @@
 #nullable enable
 
-using UnityEngine;
+using System;
 using Edanoue.VR.Device.Core;
 using Unity.XR.PXR;
-using System;
+using UnityEngine;
 
 namespace Edanoue.VR.Device.Pico
 {
     public abstract class PicoControllerBase : IController, IUpdatable
     {
-        private bool _isConnected = false;
+        private Action<float, float>? _changedStickDelegate;
+        private bool _isConnected;
+
+        // Primary Button
+        private int _isPressedPrimary;
+
+        // Thumb Stick
+        private int _isPressedStick;
+        private int _isTouchedPrimary;
+        private int _isTouchedStick;
+        private Action<bool>? _pressedPrimaryDelegate;
+        private Action<bool>? _pressedStickDelegate;
 
         // Position
         private float _px;
@@ -21,21 +32,10 @@ namespace Edanoue.VR.Device.Pico
         private float _rx;
         private float _ry;
         private float _rz;
-
-        // Primary Button
-        private int _isPressedPrimary = 0;
-        private int _isTouchedPrimary = 0;
-        private Action<bool>? _pressedPrimaryDelegate;
+        private float _stickX;
+        private float _stickY;
         private Action<bool>? _touchedPrimaryDelegate;
-
-        // Thumb Stick
-        private int _isPressedStick = 0;
-        private int _isTouchedStick = 0;
-        private float _stickX = 0f;
-        private float _stickY = 0f;
-        private Action<bool>? _pressedStickDelegate;
         private Action<bool>? _touchedStickDelegate;
-        private Action<float, float>? _changedStickDelegate;
 
         protected abstract PXR_Input.Controller _PicoControllerDomain { get; }
 
@@ -77,7 +77,7 @@ namespace Edanoue.VR.Device.Pico
             add => _touchedStickDelegate += value;
             remove => _touchedStickDelegate -= value;
         }
-        
+
         event Action<float, float>? IController.ChangedStick
         {
             add => _changedStickDelegate += value;
@@ -87,19 +87,16 @@ namespace Edanoue.VR.Device.Pico
         void IUpdatable.Update(float deltaTime)
         {
             // Check connection
-            _isConnected = PXR_Input.IsControllerConnected(this._PicoControllerDomain);
+            _isConnected = PXR_Input.IsControllerConnected(_PicoControllerDomain);
 
-            if (_isConnected == false)
-            {
-                return;
-            }
+            if (_isConnected == false) return;
 
             // Fetch positions and rotations
             var controllerTracking = new PxrControllerTracking();
             var headData = new float[7] { 0, 0, 0, 0, 0, 0, 0 };
             const double predictTime = 0.0d;
 
-            PXR_Plugin.Controller.UPxr_GetControllerTrackingState((uint)this._PicoControllerDomain, predictTime,
+            PXR_Plugin.Controller.UPxr_GetControllerTrackingState((uint)_PicoControllerDomain, predictTime,
                 headData, ref controllerTracking);
             _px = controllerTracking.localControllerPose.pose.position.x;
             _py = controllerTracking.localControllerPose.pose.position.y;

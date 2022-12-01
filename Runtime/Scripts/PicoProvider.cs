@@ -13,21 +13,22 @@ namespace Edanoue.VR.Device.Pico
             LeftController = new PicoControllerLeft();
             RightController = new PicoControllerRight();
         }
-        
-        string IProvider.FamilyName => "Pico";
-        string IProvider.ProductName => "Pico";
-        string IProvider.Version => "1.0.0";
-        
-        // IProvider impls
-        #region IProvider impls
-        
-        IHeadset IProvider.Headset => _headset;
-        IController IProvider.LeftController => LeftController;
-        IController IProvider.RightController => RightController;
-        
-        #endregion
 
         public PicoControllerLeft LeftController { get; }
         public PicoControllerRight RightController { get; }
+
+        string IProvider.FamilyName => "Pico";
+        string IProvider.ProductName => "Pico";
+        string IProvider.Version => "1.0.0";
+
+        // IProvider impls
+
+        #region IProvider impls
+
+        IHeadset IProvider.Headset => _headset;
+        IController IProvider.LeftController => LeftController;
+        IController IProvider.RightController => RightController;
+
+        #endregion
     }
 }
