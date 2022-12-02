@@ -2,6 +2,7 @@
 
 using System;
 using Edanoue.VR.Device.Core;
+using UnityEngine.XR;
 using Unity.XR.PXR;
 using UnityEngine;
 
@@ -37,13 +38,15 @@ namespace Edanoue.VR.Device.Pico
         private Action<bool>? _touchedPrimaryDelegate;
         private Action<bool>? _touchedStickDelegate;
 
-        protected abstract PXR_Input.Controller _PicoControllerDomain { get; }
+        protected abstract ControllerDomain _controllerDomain { get; }
 
         bool ITracker.IsConnected => _isConnected;
 
         (float X, float Y, float Z) ITracker.Position => (_px, _py, _pz);
 
         (float W, float X, float Y, float Z) ITracker.Rotation => (_rw, _rx, _ry, _ry);
+
+        ControllerDomain IController.Domain => _controllerDomain;
 
         // Primary Button
         bool IController.IsPressedPrimary => _isPressedPrimary > 0;
@@ -87,7 +90,15 @@ namespace Edanoue.VR.Device.Pico
         void IUpdatable.Update(float deltaTime)
         {
             // Check connection
-            _isConnected = PXR_Input.IsControllerConnected(_PicoControllerDomain);
+            _isConnected = false;
+            if (_controllerDomain == ControllerDomain.Left)
+            {
+                InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(PXR_Usages.controllerStatus, out _isConnected);
+            }
+            else
+            {
+                InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(PXR_Usages.controllerStatus, out _isConnected);
+            }
 
             if (_isConnected == false) return;
 
@@ -96,7 +107,7 @@ namespace Edanoue.VR.Device.Pico
             var headData = new float[7] { 0, 0, 0, 0, 0, 0, 0 };
             const double predictTime = 0.0d;
 
-            PXR_Plugin.Controller.UPxr_GetControllerTrackingState((uint)_PicoControllerDomain, predictTime,
+            PXR_Plugin.Controller.UPxr_GetControllerTrackingState((uint)_controllerDomain, predictTime,
                 headData, ref controllerTracking);
             _px = controllerTracking.localControllerPose.pose.position.x;
             _py = controllerTracking.localControllerPose.pose.position.y;
@@ -153,11 +164,11 @@ namespace Edanoue.VR.Device.Pico
 
     public class PicoControllerLeft : PicoControllerBase
     {
-        protected override PXR_Input.Controller _PicoControllerDomain => PXR_Input.Controller.LeftController;
+        protected override ControllerDomain _controllerDomain => ControllerDomain.Left;
     }
 
     public class PicoControllerRight : PicoControllerBase
     {
-        protected override PXR_Input.Controller _PicoControllerDomain => PXR_Input.Controller.RightController;
+        protected override ControllerDomain _controllerDomain => ControllerDomain.Right;
     }
 }

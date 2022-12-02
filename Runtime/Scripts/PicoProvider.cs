@@ -19,7 +19,7 @@ namespace Edanoue.VR.Device.Pico
 
         string IProvider.FamilyName => "Pico";
         string IProvider.ProductName => "Pico";
-        string IProvider.Version => "1.0.0";
+        string IProvider.Version => "0.1.0";
 
         // IProvider impls
 
